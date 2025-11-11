@@ -1,0 +1,7 @@
+.env
+*.jpg
+*.jpeg
+*.mp4
+*.srt
+config.json
+__pycache__

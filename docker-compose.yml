@@ -1,0 +1,104 @@
+services:
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - video_processing
+
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: video_processing
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 5
+  #   networks:
+  #     - video_processing
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./shared:/shared
+      - ./orchestrator.py:/app/orchestrator.py  # Mount for easy development
+    depends_on:
+      redis:
+        condition: service_healthy
+      # postgres:
+      #   condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - video_processing
+
+  screenshot-worker:
+    image: screenshot-gpu
+    # build:
+    #   context: ./screenshot
+    #   dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./shared:/shared
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - video_processing
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  transcribe-worker:
+    image: transcribe-gpu
+    # build:
+    #   context: ./transcribe
+    #   dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./shared:/shared
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - video_processing
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  video_processing:
+    driver: bridge

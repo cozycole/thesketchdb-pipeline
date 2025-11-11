@@ -1,0 +1,11 @@
+{
+  "screenshot": {
+    "python": "/path/to/screenshot-env/bin/python",
+    "script": "/path/to/screenshot-tool/main.py"
+  },
+  "transcription": {
+    "python": "/path/to/transcription-env/bin/python",
+    "script": "/path/to/transcription-tool/main.py"
+  },
+  "model" : "/path/to/model.pth"
+}
