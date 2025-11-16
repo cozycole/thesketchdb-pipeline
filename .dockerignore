@@ -16,6 +16,7 @@ myenv/
 **/*.jpeg
 **/*.mp4
 **/*.wav
+**/*.srt
 **/*.mp3
 output/
 videos/
@@ -24,3 +25,4 @@ videos/
 *.md
 .env
 *.log
+shared
