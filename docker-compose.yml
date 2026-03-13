@@ -48,6 +48,8 @@ services:
     restart: unless-stopped
     networks:
       - video_processing
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   screenshot-worker:
     image: screenshot-gpu

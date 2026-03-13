@@ -3,6 +3,9 @@
 *.jpeg
 *.mp4
 *.srt
+*.mkv
+*.sh
+*.txt
 config.json
 shared
 __pycache__
