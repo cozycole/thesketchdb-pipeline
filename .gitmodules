@@ -1,6 +1,0 @@
-[submodule "transcribe"]
-	path = transcribe
-	url = https://github.com/cozycole/thesketchdb-transcribe-tool
-[submodule "screenshot"]
-	path = screenshot
-	url = https://github.com/cozycole/thesketchdb-screenshot-tool
