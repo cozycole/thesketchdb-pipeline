@@ -39,6 +39,7 @@ class Orchestrator:
     def run_service(self, poll_interval=10):
         logger.info("Orchestrator service starting...")
         logger.info(f"Polling interval: {poll_interval} seconds")
+        logger.info(self.db._db_url)
 
         while True:
             try:
@@ -86,7 +87,7 @@ class Orchestrator:
             logger.info(f"Job {job_id} completed successfully. Starting archival...")
 
             # Archive the source video in cold storage
-            archive_key = f"{uuid.uuid4()}{Path(video_key).suffix}"
+            archive_key = f"video/{uuid.uuid4()}{Path(video_key).suffix}"
             self.cold_storage.upload(
                 local_path=src_video_path,
                 remote_key=archive_key,
@@ -174,7 +175,7 @@ class Orchestrator:
             image_pair['image_name'] = f"{uuid.uuid4()}.jpg"
 
         self.db.insert_screenshots(screenshots, sketch_id)
-        
+
         logger.info(f"Uploading {len(screenshots)} screenshots")
         for image_pair in screenshots:
             thumb_s3_key = f"cast_auto_screenshots/thumbnail/{image_pair['image_name']}"
@@ -231,7 +232,8 @@ if __name__ == "__main__":
 
     cold_storage = s.S3StorageBackend(
         client=cold_s3_client,
-        bucket=str(storage_env["COLD_S3_BUCKET"])
+        bucket=str(storage_env["COLD_S3_BUCKET"]),
+        public_read=False,
     )
 
     # Configure celery app

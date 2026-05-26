@@ -52,10 +52,12 @@ services:
       - "host.docker.internal:host-gateway"
 
   screenshot-worker:
-    image: screenshot-gpu
-    # build:
-    #   context: ./screenshot
-    #   dockerfile: Dockerfile
+    # image: screenshot-gpu
+    build:
+      context: ./screenshot
+      dockerfile: Dockerfile
+      args:
+        MODEL_PATH: ${MODEL_PATH} 
     env_file:
       - .env
     volumes:
@@ -75,10 +77,10 @@ services:
               capabilities: [gpu]
 
   transcribe-worker:
-    image: transcribe-gpu
-    # build:
-    #   context: ./transcribe
-    #   dockerfile: Dockerfile
+    # image: transcribe-gpu
+    build:
+      context: ./transcribe
+      dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
